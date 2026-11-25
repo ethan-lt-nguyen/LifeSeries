@@ -22,6 +22,7 @@ public class ScoreboardManager {
         createTeam("green", NamedTextColor.GREEN);
         createTeam("yellow", NamedTextColor.YELLOW);
         createTeam("red", NamedTextColor.RED);
+        createTeam("boogeyman", NamedTextColor.DARK_RED);
         createTeam("dead", NamedTextColor.GRAY);
 
         Objective objective = scoreboard.getObjective("lives");
@@ -64,6 +65,22 @@ public class ScoreboardManager {
         }
 
         updatePlayerLives(player, lives);
+
+        player.displayName(Component.text(
+                player.getName(),
+                getColorFromLives(lives)
+        ));
+    }
+
+    public void setBoogeyman(Player player) {
+        removeFromLifeTeams(player);
+
+        scoreboard.getTeam("boogeyman").addEntry(player.getName());
+
+        player.displayName(Component.text(
+                player.getName(),
+                NamedTextColor.DARK_RED
+        ));
     }
 
     public void updatePlayerLives(Player player, int lives) {
@@ -77,6 +94,7 @@ public class ScoreboardManager {
         scoreboard.getTeam("green").removeEntry(name);
         scoreboard.getTeam("yellow").removeEntry(name);
         scoreboard.getTeam("red").removeEntry(name);
+        scoreboard.getTeam("boogeyman").removeEntry(name);
         scoreboard.getTeam("dead").removeEntry(name);
     }
 

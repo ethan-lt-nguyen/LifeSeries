@@ -16,15 +16,18 @@ import java.util.UUID;
 public class KillManager implements Listener {
 
     private final BoogeymanManager boogeymanManager;
+    private final FinalHuntManager finalHuntManager;
     private final LivesManager livesManager;
 
     private final Map<UUID, Integer> redLifeKills = new HashMap<>();
 
     public KillManager(
             BoogeymanManager boogeymanManager,
+            FinalHuntManager finalHuntManager,
             LivesManager livesManager
     ) {
         this.boogeymanManager = boogeymanManager;
+        this.finalHuntManager = finalHuntManager;
         this.livesManager = livesManager;
     }
 
@@ -32,6 +35,8 @@ public class KillManager implements Listener {
     public void onDeath(PlayerDeathEvent event) {
         Player victim = event.getPlayer();
         Player killer = victim.getKiller();
+
+        finalHuntManager.handleKill(killer, victim);
 
         if (killer == null || killer.equals(victim)) {
             return;

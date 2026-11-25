@@ -1,5 +1,6 @@
 package org.b0basaurea.life;
 
+import org.b0basaurea.life.Commands.FinalHuntCommand;
 import org.b0basaurea.life.Commands.SessionCommands;
 import org.b0basaurea.life.Managers.BoogeymanManager;
 import org.b0basaurea.life.Commands.LivesCommand;
@@ -17,6 +18,7 @@ public final class LifeSeries extends JavaPlugin {
     private ScoreboardManager scoreboardManager;
     private SessionManager sessionManager;
     private BoogeymanManager boogeymanManager;
+    private FinalHuntManager finalHuntManager;
     private KillManager killManager;
 //    private IndirectKillManager indirectKillManager;
 
@@ -24,12 +26,13 @@ public final class LifeSeries extends JavaPlugin {
     public void onEnable() {
         scoreboardManager = new ScoreboardManager();
         manager = new LivesManager(this, scoreboardManager);
-        sessionManager = new SessionManager(killManager, boogeymanManager, manager);
         boogeymanManager = new BoogeymanManager(manager, this, scoreboardManager);
+        finalHuntManager = new FinalHuntManager(this, manager, scoreboardManager);
 //        indirectKillManager = new IndirectKillManager(this);
-        killManager = new KillManager(boogeymanManager, manager);
+        killManager = new KillManager(boogeymanManager, finalHuntManager, manager);
+        sessionManager = new SessionManager(killManager, boogeymanManager, manager);
 
-        getServer().getPluginManager().registerEvents(new DeathManager(manager, scoreboardManager), this);
+        getServer().getPluginManager().registerEvents(new DeathManager(this, manager, scoreboardManager, finalHuntManager), this);
         getServer().getPluginManager().registerEvents(new JoinManager(manager, scoreboardManager, killManager), this);
         getServer().getPluginManager().registerEvents(new ChatManager(manager, scoreboardManager), this);
 
@@ -38,6 +41,7 @@ public final class LifeSeries extends JavaPlugin {
 
         LivesCommand livesCommand = new LivesCommand(manager, scoreboardManager, this);
         SessionCommands sessionCommands = new SessionCommands(sessionManager, boogeymanManager);
+        FinalHuntCommand finalHuntCommand = new FinalHuntCommand(finalHuntManager);
         //Commands
         getCommand("lives").setExecutor(livesCommand);
         getCommand("setLives").setExecutor(livesCommand);
@@ -45,25 +49,25 @@ public final class LifeSeries extends JavaPlugin {
         getCommand("removeLives").setExecutor(livesCommand);
         getCommand("givelife").setExecutor(livesCommand);
         getCommand("session").setExecutor(sessionCommands);
+        getCommand("finalhunt").setExecutor(finalHuntCommand);
 
         //Tab completers
         getCommand("session").setTabCompleter(sessionCommands);
+        getCommand("finalhunt").setTabCompleter(finalHuntCommand);
         getCommand("lives").setTabCompleter(livesCommand);
         getCommand("setLives").setTabCompleter(livesCommand);
         getCommand("addLives").setTabCompleter(livesCommand);
         getCommand("removeLives").setTabCompleter(livesCommand);
         getCommand("givelife").setTabCompleter(livesCommand);
 
-        ActionBarManager actionBarManager = new ActionBarManager(this, manager, scoreboardManager);
-        actionBarManager.start();
+//        ActionBarManager actionBarManager = new ActionBarManager(this, manager, scoreboardManager);
+//        actionBarManager.start();
 
         //TNT Recipe
-        NamespacedKey key = NamespacedKey.minecraft("tnt");
-
-        Bukkit.removeRecipe(key);
+        NamespacedKey customTntKey = new NamespacedKey(this, "tnt");
 
         ShapedRecipe recipe = new ShapedRecipe(
-                key,
+                customTntKey,
                 new ItemStack(Material.TNT)
         );
 
@@ -82,6 +86,7 @@ public final class LifeSeries extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        finalHuntManager.stopHunt();
         manager.saveAllPlayers();
     }
 }
