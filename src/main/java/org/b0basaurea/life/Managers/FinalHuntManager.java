@@ -166,8 +166,8 @@ public class FinalHuntManager {
             player.playSound(
                     player.getLocation(),
                     Sound.BLOCK_DISPENSER_DISPENSE,
-                    1.0f,
-                    seconds <= 3 ? 0.5f : 0.8f
+                    seconds <= 3 ? 1.25f : 1.0f,
+                    seconds <= 3 ? 0.80f : 1.0f
             );
         }
     }
