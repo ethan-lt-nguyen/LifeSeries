@@ -29,8 +29,8 @@ import java.util.concurrent.ThreadLocalRandom;
 public class FinalHuntManager {
 
     private static final long SECOND = 20L;
-//    private static final long FIVE_MINUTES = 5 * 60 * SECOND;
-    private static final long COUNTDOWN_DURATION = 60 * SECOND;
+    private static final long FIVE_MINUTES = 5 * 60 * SECOND;
+//    private static final long COUNTDOWN_DURATION = 60 * SECOND;
 
     private static final long REVEAL_INTERVAL = 30 * SECOND;
     private static final int REVEAL_DURATION = 8 * 20;
@@ -86,36 +86,36 @@ public class FinalHuntManager {
 
         playSoundForEveryone(Sound.ENTITY_WARDEN_HEARTBEAT, 1.0f, 0.7f);
 
-//        schedule(this::showFourMinuteWarning, 4 * 60 * SECOND);
-//        schedule(this::showOneMinuteWarning, 4 * 60 * SECOND + 45 * SECOND);
-//        schedule(() -> showCountdownTitle(10), 5 * 60 * SECOND - 10 * SECOND);
-//        schedule(() -> showCountdownTitle(5), 5 * 60 * SECOND - 5 * SECOND);
-//        schedule(() -> showCountdownTitle(4), 5 * 60 * SECOND - 4 * SECOND);
-//        schedule(() -> showCountdownTitle(3), 5 * 60 * SECOND - 3 * SECOND);
-//        schedule(() -> showCountdownTitle(2), 5 * 60 * SECOND - 2 * SECOND);
-//        schedule(() -> showCountdownTitle(1), 5 * 60 * SECOND - SECOND);
-//
-//        countdownTask = Bukkit.getScheduler().runTaskLater(
-//                plugin,
-//                this::chooseBoogeyman,
-//                FIVE_MINUTES
-//        );
-
-        schedule(this::showFourMinuteWarning, 30 * SECOND);
-        schedule(this::showOneMinuteWarning, 45 * SECOND);
-
-        schedule(() -> showCountdownTitle(10), 50 * SECOND);
-        schedule(() -> showCountdownTitle(5), 55 * SECOND);
-        schedule(() -> showCountdownTitle(4), 56 * SECOND);
-        schedule(() -> showCountdownTitle(3), 57 * SECOND);
-        schedule(() -> showCountdownTitle(2), 58 * SECOND);
-        schedule(() -> showCountdownTitle(1), 59 * SECOND);
+        schedule(this::showFourMinuteWarning, 4 * 60 * SECOND);
+        schedule(this::showOneMinuteWarning, 4 * 60 * SECOND + 45 * SECOND);
+        schedule(() -> showCountdownTitle(10), 5 * 60 * SECOND - 10 * SECOND);
+        schedule(() -> showCountdownTitle(5), 5 * 60 * SECOND - 5 * SECOND);
+        schedule(() -> showCountdownTitle(4), 5 * 60 * SECOND - 4 * SECOND);
+        schedule(() -> showCountdownTitle(3), 5 * 60 * SECOND - 3 * SECOND);
+        schedule(() -> showCountdownTitle(2), 5 * 60 * SECOND - 2 * SECOND);
+        schedule(() -> showCountdownTitle(1), 5 * 60 * SECOND - SECOND);
 
         countdownTask = Bukkit.getScheduler().runTaskLater(
                 plugin,
                 this::chooseBoogeyman,
-                COUNTDOWN_DURATION
+                FIVE_MINUTES
         );
+
+//        schedule(this::showFourMinuteWarning, 30 * SECOND);
+//        schedule(this::showOneMinuteWarning, 45 * SECOND);
+//
+//        schedule(() -> showCountdownTitle(10), 50 * SECOND);
+//        schedule(() -> showCountdownTitle(5), 55 * SECOND);
+//        schedule(() -> showCountdownTitle(4), 56 * SECOND);
+//        schedule(() -> showCountdownTitle(3), 57 * SECOND);
+//        schedule(() -> showCountdownTitle(2), 58 * SECOND);
+//        schedule(() -> showCountdownTitle(1), 59 * SECOND);
+//
+//        countdownTask = Bukkit.getScheduler().runTaskLater(
+//                plugin,
+//                this::chooseBoogeyman,
+//                COUNTDOWN_DURATION
+//        );
     }
 
     private void showFourMinuteWarning() {
@@ -244,7 +244,7 @@ public class FinalHuntManager {
 
         schedule(this::showSkyOmen, 100L);
         schedule(this::showQuestionTitle, 170L);
-        schedule(this::showBoogeymanReveal, 280L);
+        schedule(this::showBoogeymanReveal, 330L);
     }
 
     private void showSkyOmen() {
@@ -656,7 +656,6 @@ public class FinalHuntManager {
                     NamedTextColor.DARK_RED
             ));
 
-            startRevealCycle();
             schedule(this::showQuietBoogeymanReveal, 5 * SECOND);
         });
     }
@@ -670,6 +669,11 @@ public class FinalHuntManager {
 
         if (target != null) {
             target.removePotionEffect(PotionEffectType.GLOWING);
+
+            scoreboardManager.updatePlayerTeam(
+                    target,
+                    livesManager.getLives(target)
+            );
         }
 
         boogeyman = null;

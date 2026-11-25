@@ -1,5 +1,5 @@
 name: LifeSeries
-version: '${version}'
+version: '1.0.1'
 
 main: org.b0basaurea.life.LifeSeries
 api-version: '26.2'
